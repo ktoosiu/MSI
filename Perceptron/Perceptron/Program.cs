@@ -11,15 +11,16 @@ namespace Perceptron
         static void Main(string[] args)
         {
             var perc = new Perceptron(3);
+            double bias = 1;
             var inputs = new double[,]
              {
-                {1, 2, 1},
-                {1, 2, 2},
-                {1, 0, 6},
-                {1, -2, 10},
-                {1, -2, 0},
-                {1, 0, 0},
-                {1, 4, -20}
+                {bias, 2, 1},
+                {bias, 2, 2},
+                {bias, 0, 6},
+                {bias, -2, 10},
+                {bias, -2, 0},
+                {bias, 0, 0},
+                {bias, 4, -20}
              };
             var outputs = new double[]
             {
