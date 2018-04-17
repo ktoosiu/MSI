@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Perceptron
 {
-    public class Perceptron
+    public class Adaline
     {
         public Func<double, double> ActivationFunction { get; set; }
         public List<double> Weights { get; set; }
         public int NumberOfInputs { get; set; }
 
-        public Perceptron(int numberOfInputs)
+        public Adaline(int numberOfInputs)
         {
             this.NumberOfInputs = numberOfInputs;
             Weights = new List<double>(NumberOfInputs);
@@ -132,24 +133,20 @@ namespace Perceptron
             {
                 t = 0;
                 epoch++;
-                for (int i = 0; i < trainOutputs.Length; i++)
+                for (var i = 0; i < trainOutputs.Length; i++)
                 {
                     var temp = new double[trainInputs.GetLength(1)];
-                    for (int j = 0; j < trainInputs.GetLength(1); j++)
+                    for (var j = 0; j < trainInputs.GetLength(1); j++)
                     {
                         temp[j] = trainInputs[i, j];
 
-                    }
-
-
-                    double calc = CalculateOutput(temp);
-
-                    if (Math.Abs(calc - trainOutputs[i]) > 1e-10)
-                    {
                         Console.WriteLine($"\n------------e {epoch}   t {t}----------------\n");
                         ChangeWeights(temp, trainOutputs[i]);
                         Console.WriteLine();
                     }
+
+
+
                     t++;
 
                 }
@@ -164,11 +161,11 @@ namespace Perceptron
         }
         public void ChangeWeights(double[] inputs, double output)
         {
-            double s = 0.3;//wspolczynnik nauczania
+            double s = 1;//wspolczynnik nauczania
             for (int i = 0; i < Weights.Count; i++)
             {
                 Console.Write($"\tw{i}: {Math.Round(Weights[i], 4)} ->");
-                Weights[i] += inputs[i] * output * s;
+                Weights[i] += s * (output - CalculateOutput(inputs)) * inputs[i];
                 Console.Write($"{Math.Round(Weights[i], 4)}");
             }
         }
