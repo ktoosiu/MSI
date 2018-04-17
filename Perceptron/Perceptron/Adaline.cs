@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Perceptron
+namespace Adaline
 {
-    public class Perceptron
+    public class Adaline
     {
         public Func<double, double> ActivationFunction { get; set; }
         protected List<double> _weights;
         public int _numberOfInputs;
-        public Perceptron(int numberOfInputs)
+        public Adaline(int numberOfInputs)
         {
             this._numberOfInputs = numberOfInputs;
             _weights = new List<double>(_numberOfInputs);
@@ -35,14 +35,14 @@ namespace Perceptron
             for (int i = 0; i < _numberOfInputs; i++)
             {
                 _weights.Add(Math.Round(random.NextDouble() * (endRange - startRange)
-                    + startRange,4));
+                    + startRange, 4));
                 Console.Write($"\tw{i}: {_weights[i]}  ");
             }
         }
-        public void Test(double[,] inputs, double[] outputs,int n=-1)
-        { 
-          
-            for (int i = 0; i <inputs.GetLength(0); i++)
+        public void Test(double[,] inputs, double[] outputs, int n = -1)
+        {
+
+            for (int i = 0; i < inputs.GetLength(0); i++)
             {
                 var temp = new double[inputs.GetLength(1)];
                 for (int j = 0; j < temp.Length; j++)
@@ -50,7 +50,7 @@ namespace Perceptron
                     temp[j] = inputs[i, j];
                 }
 
-                
+
                 Console.WriteLine($"\n------------ZESTAW {i}------------");
                 this.ShowWeights();
                 Console.Write($"\t  y: {this.CalculateOutput(temp)}");
@@ -61,16 +61,16 @@ namespace Perceptron
                 }
                 Console.Write($"\tf(x): {outputs[i]}");
                 Console.WriteLine();
-               
+
                 for (int l = 0; l < temp.Length; l++)
                 {
-                    Console.Write($" \t{_weights[l]*inputs[i,l]}\t");
+                    Console.Write($" \t{_weights[l] * inputs[i, l]}\t");
                 }
 
                 Console.WriteLine();
             }
         }
-        
+
         //public void Train(double[,] trainInputs, double[] trainOutputs, double epsilon)
         //{
         //    int t = 0;
@@ -124,10 +124,9 @@ namespace Perceptron
         public void Train(double[,] trainInputs, double[] trainOutputs, double epsilon)
         {
             int t = 0;
-            int epoch = 0;
             while (CalculateEpsilon(trainInputs, trainOutputs) > epsilon)
             {
-                epoch++;
+
                 for (int i = 0; i < trainOutputs.Length; i++)
                 {
                     var temp = new double[trainInputs.GetLength(1)];
@@ -137,12 +136,12 @@ namespace Perceptron
 
                     }
 
-                 
+
                     double calc = CalculateOutput(temp);
-                   
+
                     if (calc != trainOutputs[i])
                     {
-                        Console.WriteLine($"\n---------------e {epoch}  t {t%_weights.Count+1}----------------\n");
+                        Console.WriteLine($"\n---------------t {t}----------------\n");
                         ChangeWeights(temp, trainOutputs[i]);
                         Console.WriteLine();
                     }
@@ -162,16 +161,17 @@ namespace Perceptron
         {
             for (int i = 0; i < _weights.Count; i++)
             {
-               Console.Write($"\tw{i}: {Math.Round(_weights[i], 4)} ->");
-                _weights[i] += inputs[i] * output;
-               Console.Write($"{Math.Round(_weights[i], 4)}");
+                double s = 0.8;
+                Console.Write($"\tw{i}: {Math.Round(_weights[i], 4)} ->");
+                _weights[i] += inputs[i] * (output-this.CalculateOutput(inputs))*s;
+                Console.Write($"{Math.Round(_weights[i], 4)}");
             }
         }
 
         public double CalculateEpsilon(double[,] inputs, double[] outputs)
         {
             double eps = 0;
-            
+
             for (int i = 0; i < inputs.GetLength(0); i++)
             {
                 var temp = new double[_weights.Count];
@@ -201,7 +201,7 @@ namespace Perceptron
         private double Signum(double x)
         {
             if (x > 0) return 1;
-            else if(x<0)return -1;
+            else if (x < 0) return -1;
             return 10000000;
         }
 

@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Instrumentation;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Perceptron
 {
-    public class Perceptron
+    public class Sigmoidal
     {
-        public Func<double, double> ActivationFunction { get; set; }
+        public static Func<double, double> ActivationFunction { get; set; } = SigmoidalUnipolar;
         protected List<double> _weights;
         public int _numberOfInputs;
-        public Perceptron(int numberOfInputs)
+        public Sigmoidal(int numberOfInputs)
         {
             this._numberOfInputs = numberOfInputs;
             _weights = new List<double>(_numberOfInputs);
             InitWeights();
-            ActivationFunction = Signum;
+            
 
 
         }
@@ -35,14 +38,14 @@ namespace Perceptron
             for (int i = 0; i < _numberOfInputs; i++)
             {
                 _weights.Add(Math.Round(random.NextDouble() * (endRange - startRange)
-                    + startRange,4));
+                    + startRange, 4));
                 Console.Write($"\tw{i}: {_weights[i]}  ");
             }
         }
-        public void Test(double[,] inputs, double[] outputs,int n=-1)
-        { 
-          
-            for (int i = 0; i <inputs.GetLength(0); i++)
+        public void Test(double[,] inputs, double[] outputs, int n = -1)
+        {
+
+            for (int i = 0; i < inputs.GetLength(0); i++)
             {
                 var temp = new double[inputs.GetLength(1)];
                 for (int j = 0; j < temp.Length; j++)
@@ -50,7 +53,7 @@ namespace Perceptron
                     temp[j] = inputs[i, j];
                 }
 
-                
+
                 Console.WriteLine($"\n------------ZESTAW {i}------------");
                 this.ShowWeights();
                 Console.Write($"\t  y: {this.CalculateOutput(temp)}");
@@ -61,16 +64,16 @@ namespace Perceptron
                 }
                 Console.Write($"\tf(x): {outputs[i]}");
                 Console.WriteLine();
-               
+
                 for (int l = 0; l < temp.Length; l++)
                 {
-                    Console.Write($" \t{_weights[l]*inputs[i,l]}\t");
+                    Console.Write($" \t{_weights[l] * inputs[i, l]}\t");
                 }
 
                 Console.WriteLine();
             }
         }
-        
+
         //public void Train(double[,] trainInputs, double[] trainOutputs, double epsilon)
         //{
         //    int t = 0;
@@ -124,10 +127,9 @@ namespace Perceptron
         public void Train(double[,] trainInputs, double[] trainOutputs, double epsilon)
         {
             int t = 0;
-            int epoch = 0;
             while (CalculateEpsilon(trainInputs, trainOutputs) > epsilon)
             {
-                epoch++;
+
                 for (int i = 0; i < trainOutputs.Length; i++)
                 {
                     var temp = new double[trainInputs.GetLength(1)];
@@ -137,12 +139,13 @@ namespace Perceptron
 
                     }
 
-                 
+
                     double calc = CalculateOutput(temp);
-                   
+
                     if (calc != trainOutputs[i])
                     {
-                        Console.WriteLine($"\n---------------e {epoch}  t {t%_weights.Count+1}----------------\n");
+                        Console.WriteLine($"\n---------------t {t}----------------\n");
+                        Console.WriteLine($"eps: {CalculateEpsilon(trainInputs,trainOutputs)}");
                         ChangeWeights(temp, trainOutputs[i]);
                         Console.WriteLine();
                     }
@@ -162,16 +165,19 @@ namespace Perceptron
         {
             for (int i = 0; i < _weights.Count; i++)
             {
-               Console.Write($"\tw{i}: {Math.Round(_weights[i], 4)} ->");
-                _weights[i] += inputs[i] * output;
-               Console.Write($"{Math.Round(_weights[i], 4)}");
+                double s = 0.8;
+
+                Console.Write($"\tw{i}: {Math.Round(_weights[i], 4)} ->");
+                _weights[i] +=
+                    s * (output -(CalculateOutput(inputs))) * Derivative(CalculateOutput(inputs)) *inputs[i];
+                Console.Write($"{Math.Round(_weights[i], 4)}");
             }
         }
 
         public double CalculateEpsilon(double[,] inputs, double[] outputs)
         {
             double eps = 0;
-            
+
             for (int i = 0; i < inputs.GetLength(0); i++)
             {
                 var temp = new double[_weights.Count];
@@ -179,8 +185,7 @@ namespace Perceptron
                 {
                     temp[j] = inputs[i, j];
                 }
-
-                if (this.CalculateOutput(temp) != outputs[i]) eps++;
+                eps+=0.5 * Math.Pow(outputs[i] - CalculateOutput(temp),2);
             }
             return eps;
         }
@@ -193,18 +198,31 @@ namespace Perceptron
                 result += inputs[i] * _weights[i];
             }
 
-            double sig = ActivationFunction(result);
+            return ActivationFunction(result);
 
-            return sig;
         }
 
-        private double Signum(double x)
+        private static double SigmoidalUnipolar(double x)
         {
-            if (x > 0) return 1;
-            else if(x<0)return -1;
-            return 10000000;
-        }
+            double beta = 3;
 
+            double result= 1 / (1 + Math.Pow(Math.E, -1 * beta * x));
+            return result;
+        }
+        private static double SigmoidalBipolar(double x)
+        {
+            double beta = 3;
+            double result =(1 - Math.Pow(Math.E,  beta * x)) / (1 + Math.Pow(Math.E, -1 * beta * x));
+            return result;
+
+        }
+         double Derivative(double x, double h=0.01)
+        {
+            double result = 0;
+            double beta = 3;
+            return beta *x*(1-x);
+
+        }
 
     }
 }

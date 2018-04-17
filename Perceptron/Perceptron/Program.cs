@@ -10,7 +10,7 @@ namespace Perceptron
     {
         static void Main(string[] args)
         {
-            var perc = new Perceptron(3);
+            var perc = new Sigmoidal(3);
             double bias = 1;
             var inputs = new double[,]
              {
@@ -27,7 +27,7 @@ namespace Perceptron
                 1, 1, 1, -1, -1, -1, -1
             };
             Console.WriteLine($"\n eps:{perc.CalculateEpsilon(inputs,outputs)} ");
-            perc.Train(inputs, outputs, 0);
+            perc.Train(inputs, outputs, 1);
             Console.WriteLine();
             //perc.Test(inputs, outputs);
             Console.ReadLine();
