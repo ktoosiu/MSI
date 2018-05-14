@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FANNCSharp;
 #if FANN_FIXED
 using FANNCSharp.Fixed;
@@ -19,9 +20,11 @@ namespace LiteryTrain
     class LiteryTrain
     {
 
-        static int PrintCallback(NeuralNet net, TrainingData train, uint max_epochs, uint epochs_between_reports, float desired_error, uint epochs, Object user_data)
+        static int PrintCallback(NeuralNet net, TrainingData train, uint max_epochs, uint epochs_between_reports,
+            float desired_error, uint epochs, Object user_data)
         {
-            Console.WriteLine(String.Format("Epochs     " + String.Format("{0:D}", epochs).PadLeft(8) + ". Current Error: " + net.MSE));
+            Console.WriteLine(String.Format("Epochs     " + String.Format("{0:D}", epochs).PadLeft(8) +
+                                            ". Current Error: " + net.MSE));
             return 0;
         }
 
@@ -43,7 +46,8 @@ namespace LiteryTrain
 
             Console.WriteLine("\nCreating network.");
 
-            using (NeuralNet net = new NeuralNet(NetworkType.LAYER, num_layers, num_input, num_hidden1, num_hidden2, num_hidden3, num_hidden4, num_output))
+            using (NeuralNet net = new NeuralNet(NetworkType.LAYER, num_layers, num_input, num_hidden1, num_hidden2,
+                num_hidden3, num_hidden4, num_output))
             {
                 net.LearningRate = learning_rate;
 
@@ -75,7 +79,7 @@ namespace LiteryTrain
                 using (TrainingData data = new TrainingData())
                 {
                     if (data.ReadTrainFromFile(
-                        @"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\litery.data"))
+                        @"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\cyfry_nauka.data"))
                     {
                         // Initialize and train the network with the data
                         net.InitWeights(data);
@@ -102,7 +106,7 @@ namespace LiteryTrain
                         Console.WriteLine("\nSaving network.");
 
                         net.Save(
-                            @"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\litery_net.net");
+                            @"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\cyfry_net.net");
                         Console.WriteLine("\nSinus test completed.");
                         CalculateOutputs(net);
                     }
@@ -110,44 +114,36 @@ namespace LiteryTrain
             }
         }
 
-        static public void CalculateOutputs(NeuralNet net)
+         public static void CalculateOutputs(NeuralNet net)
         {
-            using (var sw = new StreamWriter(@"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\result.txt"))
+            using (var sr= new StreamReader(@"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\cyfry_testowy.txt"))
             {
 
-
-                float[] inputs =
+                
+                int n = Array.ConvertAll(sr.ReadLine().Split(' '), Int32.Parse).First();
+                for (int i = 0; i < 6; i++)
                 {
-                    0,1,1,1,1,0,0,0,0,0,
-                    0,0,0,0,1,0,0,0,0,0,
-                    0,0,0,0,1,0,0,0,0,0,
-                    0,0,0,0,1,0,0,0,0,0,
-                    0,1,1,1,1,0,0,0,0,0,
-                    0,0,0,0,1,0,0,0,0,0,
-                    0,0,0,0,1,0,0,0,0,0,
-                    0,0,0,0,1,0,0,0,0,0,
-                    0,1,1,1,1,0,0,0,0,0,
-                    0,0,0,0,0,0,0,0,0,0
-                };
-                float[] outputs = {1, 0, 0};
-
-
-                DataType[] calc_out = net.Run(inputs);
-                for (int j = 0; j < 10; j++)
-                {
-                    for (int k = 0; k < 10; k++)
-                    {
-                        sw.Write(inputs[j + k]);
-                        Console.Write(inputs[10*j + k]);
-                    }
-
-                    Console.WriteLine();
-                    sw.WriteLine();
+                    Console.WriteLine(i);
                 }
-                sw.WriteLine($"{outputs[0]}  {outputs[1]}  {outputs[2]}={ calc_out[0]},  { calc_out[1]},  { calc_out[2]}");
-                Console.WriteLine($"{outputs[0]}  {outputs[1]}  {outputs[2]}={ calc_out[0]},  { calc_out[1]},  { calc_out[2]}");
+                //for (int i = 0; i < 6; i++)
+                //{
+                //    float[] inputs = Array.ConvertAll(sr.ReadLine().Split(' '), Single.Parse);
 
+                //   // float[] outputs = Array.ConvertAll(sr.ReadLine().Split(' '), Single.Parse);
+                    
+                //   // DataType[] calc_out = net.Run(inputs);
+                //    //for (int j = 0; j < 10; j++)
+                //    //{
+                //    //    for (int k = 0; k < 10; k++)
+                //    //    {
+                //    //        Console.Write(inputs[10 * j + k] == 0 ? ' ' : 'H');
+                //    //    }
+                //    //    Console.WriteLine();
+                //    //}
+                //    Console.WriteLine($"zestaw{i}");
+                //   // Console.WriteLine($"{outputs[0]}  {outputs[1]}  {outputs[2]}   =   {calc_out[0]},  {calc_out[1]},  {calc_out[2]}");
 
+                //}
             }
         }
 
@@ -161,6 +157,7 @@ namespace LiteryTrain
             {
                 Console.Error.WriteLine("\nAbnormal exception.");
             }
+
             //Console.ReadKey();
             return 0;
         }
@@ -171,4 +168,5 @@ namespace LiteryTrain
         }
     }
 }
+
 
