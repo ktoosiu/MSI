@@ -23,7 +23,7 @@ namespace GA.BasicTypes
             }
         }
 
-        private double GetDecodedValue()
+        public double GetDecodedValue()
         {
             double decoded = 0;
             for (int i = 0; i < Chromosome.Length; i++)
@@ -35,6 +35,13 @@ namespace GA.BasicTypes
             }
 
             return decoded;
+        }
+        public void CloneChromosome(ChromosomeType chromosomeTypeToClone)
+        {
+            for (int i = 0; i < chromosomeTypeToClone.Chromosome.Length; i++)
+            {
+                this.Chromosome[i] = chromosomeTypeToClone.Chromosome[i];
+            }
         }
     }
 

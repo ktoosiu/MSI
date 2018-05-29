@@ -49,7 +49,9 @@
     <Compile Include="BasicTypes\Individual.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="GeneticAlgorithm.cs" />
+    <Compile Include="Implementations\Mutatation.cs" />
     <Compile Include="Implementations\OnePointCross.cs" />
+    <Compile Include="Implementations\RouletteWheelSelection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

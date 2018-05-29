@@ -16,19 +16,19 @@ namespace Genetyczne.Implementations
                 Random _random = new Random();
                 int crossPoint = _random.Next(length);
 
-                bool[] ch1 = new bool[length];
-                bool[] ch11 = parent1.Chromosome.Chromosome.Take(crossPoint).ToArray();
-                bool[] ch12= parent2.Chromosome.Chromosome.Skip(crossPoint).ToArray();
-                Array.Copy(ch11, ch1, length);
-                Array.Copy(ch12, 0, ch1, length, length);
+                bool[] ch1 =
+                    parent1.Chromosome.Chromosome.Take(crossPoint).ToArray()
+                        .Concat(parent2.Chromosome.Chromosome.Skip(crossPoint)).ToArray();
 
-                bool[] ch2 = new bool[length];
-                bool[] ch21 = parent2.Chromosome.Chromosome.Take(crossPoint).ToArray();
-                bool[] ch22 = parent1.Chromosome.Chromosome.Skip(crossPoint).ToArray();
-                Array.Copy(ch11, ch1, length);
-                Array.Copy(ch12, 0, ch1, length, length);
+
+                bool[] ch2 =
+                    parent2.Chromosome.Chromosome.Take(crossPoint).ToArray()
+                        .Concat(parent1.Chromosome.Chromosome.Skip(crossPoint)).ToArray();
+                parent1.Chromosome.Chromosome = ch1;
+                parent2.Chromosome.Chromosome = ch2;
+
             }
-
+            else throw new Exception("Difrent sizes of chromosomes");
 
         }
     }
