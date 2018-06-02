@@ -91,74 +91,87 @@ namespace LiteryTrain
 
                         Console.WriteLine("\nTesting network.");
 
-                        for (uint i = 0; i < data.TrainDataLength; i++)
-                        {
-                            // Run the network on the test data
-                            DataType[] calc_out = net.Run(data.Input[i]);
+                        //for (uint i = 0; i < data.TrainDataLength; i++)
+                        //{
+                        //    // Run the network on the test data
+                        //    DataType[] calc_out = net.Run(data.Input[i]);
 
-                            Console.WriteLine("Litery test ({0}) -> {1}, should be {2}, difference = {3}",
-                                data.InputAccessor[(int)i][0],
-                                calc_out[0] == 0 ? 0.ToString() : calc_out[0].ToString(),
-                                data.OutputAccessor[(int)i][0].ToString(),
-                                FannAbs(calc_out[0] - data.Output[i][0]));
-                        }
+                        //    Console.WriteLine("Litery test ({0}) -> {1}, should be {2}, difference = {3}",
+                        //        data.InputAccessor[(int)i][0],
+                        //        calc_out[0] == 0 ? 0.ToString() : calc_out[0].ToString(),
+                        //        data.OutputAccessor[(int)i][0].ToString(),
+                        //        FannAbs(calc_out[0] - data.Output[i][0]));
+                        //}
 
                         Console.WriteLine("\nSaving network.");
 
                         net.Save(
                             @"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\cyfry_net.net");
-                        Console.WriteLine("\nSinus test completed.");
+                        Console.WriteLine("\n Cyfry test completed.");
                         CalculateOutputs(net);
                     }
                 }
             }
         }
 
-         public static void CalculateOutputs(NeuralNet net)
+        public static void CalculateOutputs(NeuralNet net)
         {
-            using (var sr= new StreamReader(@"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\cyfry_testowy.txt"))
+            using (TextReader reader = File.OpenText(@"C:\Users\mistr\Documents\Repo\MSI\Litery\Litery\cyfry_testowy.txt"))
             {
 
-                
-                int n = Array.ConvertAll(sr.ReadLine().Split(' '), Int32.Parse).First();
-                for (int i = 0; i < 6; i++)
+
+                int n = Array.ConvertAll(reader.ReadLine().Split(' '), Int32.Parse).First();
+
+
+                for (int i = 0; i < n; i++)
                 {
-                    Console.WriteLine(i);
+                    //float[] inputs = new float[100];
+                    //var inputs = Array.ConvertAll(reader.ReadLine().Split(' '), Single.Parse);
+                    var inputsChar = reader.ReadLine().Split(' ');
+                    var outputsChar = reader.ReadLine().Split(' ');
+                    var inputs = new float[100];
+                    var outputs = new float[3];
+                    for (int j = 0; j < inputsChar.Length; j++)
+                    {
+                        inputs[j] = Convert.ToSingle(inputsChar[j]);
+                    }
+                    for (int j = 0; j < outputsChar.Length; j++)
+                    {
+                        outputs[j] = Convert.ToSingle(outputsChar[j]);
+                    }
+
+                    float[] calc_out = net.Run(inputs);
+                    for (int j = 0; j < 10; j++)
+                    {
+                        for (int k = 0; k < 10; k++)
+                        {
+                            Console.Write(inputs[10 * j + k] == 0 ? ' ' : 'H');
+                        }
+                        Console.WriteLine();
+                    }
+
+                    Console.WriteLine();
+                    //Console.WriteLine($"zestaw{i}");
+                    Console.WriteLine($"{outputs[0]} => {calc_out[0]} \t {outputs[1]} =>{calc_out[1]} \t{outputs[2]} => {calc_out[2]}");
+                    Console.WriteLine("------------------------------------------------");
                 }
-                //for (int i = 0; i < 6; i++)
-                //{
-                //    float[] inputs = Array.ConvertAll(sr.ReadLine().Split(' '), Single.Parse);
-
-                //   // float[] outputs = Array.ConvertAll(sr.ReadLine().Split(' '), Single.Parse);
-                    
-                //   // DataType[] calc_out = net.Run(inputs);
-                //    //for (int j = 0; j < 10; j++)
-                //    //{
-                //    //    for (int k = 0; k < 10; k++)
-                //    //    {
-                //    //        Console.Write(inputs[10 * j + k] == 0 ? ' ' : 'H');
-                //    //    }
-                //    //    Console.WriteLine();
-                //    //}
-                //    Console.WriteLine($"zestaw{i}");
-                //   // Console.WriteLine($"{outputs[0]}  {outputs[1]}  {outputs[2]}   =   {calc_out[0]},  {calc_out[1]},  {calc_out[2]}");
-
-                //}
             }
         }
 
         static int Main(string[] args)
         {
-            try
-            {
-                LiteryTest();
-            }
-            catch
-            {
-                Console.Error.WriteLine("\nAbnormal exception.");
-            }
+            LiteryTest();
 
-            //Console.ReadKey();
+            //try
+            //{
+            //    LiteryTest();
+            //}
+            //catch
+            //{
+            //    Console.Error.WriteLine("\nAbnormal exception.");
+            //}
+
+            Console.ReadKey();
             return 0;
         }
 
